@@ -1,0 +1,575 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>import java.util.*;<a name="line.1"></a>
+<span class="sourceLineNo">002</span>/**<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * TicTacToe runs a game of TicTacToe.<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * <a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The class TicTacToe contains game logic needed for<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * variable sized game of tic-tac-toe.<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * <a name="line.7"></a>
+<span class="sourceLineNo">008</span> * @author Arttu Knuutinen<a name="line.8"></a>
+<span class="sourceLineNo">009</span> * @version 2018.1214<a name="line.9"></a>
+<span class="sourceLineNo">010</span> */<a name="line.10"></a>
+<span class="sourceLineNo">011</span><a name="line.11"></a>
+<span class="sourceLineNo">012</span>public class TicTacToe {<a name="line.12"></a>
+<span class="sourceLineNo">013</span>    /**<a name="line.13"></a>
+<span class="sourceLineNo">014</span>     * Scanner to take user input.<a name="line.14"></a>
+<span class="sourceLineNo">015</span>     */<a name="line.15"></a>
+<span class="sourceLineNo">016</span>    private static Scanner sc = new Scanner(System.in);<a name="line.16"></a>
+<span class="sourceLineNo">017</span>    /**<a name="line.17"></a>
+<span class="sourceLineNo">018</span>     * Minimum board size.<a name="line.18"></a>
+<span class="sourceLineNo">019</span>     */<a name="line.19"></a>
+<span class="sourceLineNo">020</span>    private static int minBoardSize = 3;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>    /**<a name="line.21"></a>
+<span class="sourceLineNo">022</span>     * Maximum reasonable board size.<a name="line.22"></a>
+<span class="sourceLineNo">023</span>     */<a name="line.23"></a>
+<span class="sourceLineNo">024</span>    private static int maxReasonableSize = 25;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>    /**<a name="line.25"></a>
+<span class="sourceLineNo">026</span>     * Board height, chosen by user.<a name="line.26"></a>
+<span class="sourceLineNo">027</span>     */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>    private static int boardHeight = 0;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>    /**<a name="line.29"></a>
+<span class="sourceLineNo">030</span>     * Board width, chosen by user.<a name="line.30"></a>
+<span class="sourceLineNo">031</span>     */<a name="line.31"></a>
+<span class="sourceLineNo">032</span>    private static int boardWidth = 0;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>    /**<a name="line.33"></a>
+<span class="sourceLineNo">034</span>     * Marks needed in a row to win the game, chosen by user.<a name="line.34"></a>
+<span class="sourceLineNo">035</span>     */<a name="line.35"></a>
+<span class="sourceLineNo">036</span>    private static int inRowToWin = 0;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>    /**<a name="line.37"></a>
+<span class="sourceLineNo">038</span>     * Game board in 2-dimensional array.<a name="line.38"></a>
+<span class="sourceLineNo">039</span>     */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>    private static TicTacToeNode[][] board;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>    /**<a name="line.41"></a>
+<span class="sourceLineNo">042</span>     * Boolean that keeps track of gamestate.<a name="line.42"></a>
+<span class="sourceLineNo">043</span>     */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>    private static boolean gameOver = false;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>    /**<a name="line.45"></a>
+<span class="sourceLineNo">046</span>     * Boolean that decides if it is the player's or the computer's turn.<a name="line.46"></a>
+<span class="sourceLineNo">047</span>     */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>    private static boolean playerTurn = true;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>    /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>     * Counts the turns taken, used to check if game ends in a draw.<a name="line.50"></a>
+<span class="sourceLineNo">051</span>     */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>    private static int turnsTaken = 0;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>    /**<a name="line.53"></a>
+<span class="sourceLineNo">054</span>     * Keeps track of the most recently played position.<a name="line.54"></a>
+<span class="sourceLineNo">055</span>     */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>    private static TicTacToeNode lastUsedNode;<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>    /**<a name="line.58"></a>
+<span class="sourceLineNo">059</span>     * The Main method, runs at program start.<a name="line.59"></a>
+<span class="sourceLineNo">060</span>     * <a name="line.60"></a>
+<span class="sourceLineNo">061</span>     * @param args command line arguments, not used.<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     */<a name="line.62"></a>
+<span class="sourceLineNo">063</span>    public static void main(String[] args) {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        startGame();<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        takeTurns();<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        endGame();<a name="line.66"></a>
+<span class="sourceLineNo">067</span>    }<a name="line.67"></a>
+<span class="sourceLineNo">068</span>    /**<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     * Runs necessary tasks for starting the game.<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>    private static void startGame(){<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        String intro = "You're playing TicTacToe against the computer.\n" +<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        "You're using \"X\"\n" +<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        "Computer uses \"O\"\n" +<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        "Please select the size of the board" +<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        " and amount of marks needed to win.";<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        System.out.println(intro);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        createBoard();<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        printBoard();<a name="line.79"></a>
+<span class="sourceLineNo">080</span>    }<a name="line.80"></a>
+<span class="sourceLineNo">081</span>    /**<a name="line.81"></a>
+<span class="sourceLineNo">082</span>     * Creates the board with user input.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>     */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>    private static void createBoard(){<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        while(boardHeight &lt; minBoardSize){<a name="line.85"></a>
+<span class="sourceLineNo">086</span>            System.out.print("Enter board height: ");<a name="line.86"></a>
+<span class="sourceLineNo">087</span>            boardHeight = getUserInputInt(sc.nextLine());<a name="line.87"></a>
+<span class="sourceLineNo">088</span>            if(boardHeight &gt; maxReasonableSize){<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                System.out.println("That's pretty big!");<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                if(!getUserConfirmation()){<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                    boardHeight = 0;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                }<a name="line.92"></a>
+<span class="sourceLineNo">093</span>            }<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        }<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        while(boardWidth &lt; minBoardSize){<a name="line.95"></a>
+<span class="sourceLineNo">096</span>            System.out.print("Enter board width: ");<a name="line.96"></a>
+<span class="sourceLineNo">097</span>            boardWidth = getUserInputInt(sc.nextLine());<a name="line.97"></a>
+<span class="sourceLineNo">098</span>            if(boardWidth &gt; maxReasonableSize){<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                System.out.println("That's pretty big!");<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                if(!getUserConfirmation()){<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                    boardWidth = 0;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                }<a name="line.102"></a>
+<span class="sourceLineNo">103</span>            }<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        int minMax = Math.min(boardWidth, boardHeight);<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        int minWinCond = minMax &gt;= 10 ? 5 : 3;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        while(inRowToWin &lt; minBoardSize || inRowToWin &gt; minMax) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>            System.out.print("Enter amount of marks needed in a row to win"<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                            + "(" + minWinCond + "-" + minMax + "): ");<a name="line.109"></a>
+<span class="sourceLineNo">110</span>            inRowToWin = getUserInputInt(sc.nextLine());<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        board = new TicTacToeNode[boardHeight][boardWidth];<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        for (int i = 0; i &lt; board.length; i++) {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>            for (int j = 0; j &lt; board[i].length; j++) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                board[i][j] = new TicTacToeNode(j, i);<a name="line.115"></a>
+<span class="sourceLineNo">116</span>            }<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        }<a name="line.117"></a>
+<span class="sourceLineNo">118</span>    }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>    /**<a name="line.119"></a>
+<span class="sourceLineNo">120</span>     * Alternates turns between the player and the computer.<a name="line.120"></a>
+<span class="sourceLineNo">121</span>     */<a name="line.121"></a>
+<span class="sourceLineNo">122</span>    private static void takeTurns(){<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        while(!gameOver){<a name="line.123"></a>
+<span class="sourceLineNo">124</span>            if(playerTurn){<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                playerTurn();<a name="line.125"></a>
+<span class="sourceLineNo">126</span>            } else {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                aiTurn();<a name="line.127"></a>
+<span class="sourceLineNo">128</span>            }<a name="line.128"></a>
+<span class="sourceLineNo">129</span>            printBoard();<a name="line.129"></a>
+<span class="sourceLineNo">130</span>            gameOver = wasWinningMove(lastUsedNode);<a name="line.130"></a>
+<span class="sourceLineNo">131</span>            if(!gameOver){<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                turnsTaken++;<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                if(turnsTaken == boardWidth * boardHeight){<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                    gameOver = true;<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                }<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                playerTurn = !playerTurn;<a name="line.136"></a>
+<span class="sourceLineNo">137</span>            }<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span>    }<a name="line.139"></a>
+<span class="sourceLineNo">140</span>    /**<a name="line.140"></a>
+<span class="sourceLineNo">141</span>     * Handles the player's turn.<a name="line.141"></a>
+<span class="sourceLineNo">142</span>     */<a name="line.142"></a>
+<span class="sourceLineNo">143</span>    private static void playerTurn(){<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        String input = "";<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        int x = -1;<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        int y = -1;<a name="line.146"></a>
+<span class="sourceLineNo">147</span>        boolean turnComplete = false;<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        String prompt = "Select coordinates \"x, y\" where to play your mark";<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        String coordinateError = "Please enter coordinates as requested.";<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        while(!turnComplete) {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>            while(x &lt; 0 || x &gt;= boardWidth || y &lt; 0 || y &gt;= boardHeight){<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                System.out.println(prompt);<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                System.out.print("Enter coordinates: ");<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                input = sc.nextLine();<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                input = input.replaceAll(" ", "");<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                String[] temp = input.split("\\D");<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                if(temp.length == 2){<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                    if(temp[0].length() &gt; 0){<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                        x = Integer.parseInt(temp[0]) - 1;<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                    }<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                    if(temp[1].length() &gt; 0){<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        y = Integer.parseInt(temp[1]) - 1;<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                    }<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                } else {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                    System.out.println(coordinateError);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                }<a name="line.166"></a>
+<span class="sourceLineNo">167</span>            }<a name="line.167"></a>
+<span class="sourceLineNo">168</span>            if(!board[y][x].isUsed()){<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                board[y][x].playMark('X');<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                turnComplete = true;<a name="line.170"></a>
+<span class="sourceLineNo">171</span>            } else {<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                System.out.println("You cannot place a mark over another one");<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                x = -1;<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                y = -1;<a name="line.174"></a>
+<span class="sourceLineNo">175</span>            }<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        }<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        lastUsedNode = board[y][x];<a name="line.177"></a>
+<span class="sourceLineNo">178</span>    }<a name="line.178"></a>
+<span class="sourceLineNo">179</span>    /**<a name="line.179"></a>
+<span class="sourceLineNo">180</span>     * Handles the computer's turn.<a name="line.180"></a>
+<span class="sourceLineNo">181</span>     * <a name="line.181"></a>
+<span class="sourceLineNo">182</span>     * Tries to play its move somewhere around the player's last position.<a name="line.182"></a>
+<span class="sourceLineNo">183</span>     * If there are no empty nodes around the position, plays on a random node.<a name="line.183"></a>
+<span class="sourceLineNo">184</span>     */<a name="line.184"></a>
+<span class="sourceLineNo">185</span>    private static void aiTurn(){<a name="line.185"></a>
+<span class="sourceLineNo">186</span>        int y = 0;<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        int x = 0;<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        int playerLastX = lastUsedNode.getX();<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        int playerLastY = lastUsedNode.getY();<a name="line.189"></a>
+<span class="sourceLineNo">190</span><a name="line.190"></a>
+<span class="sourceLineNo">191</span>        // Finds empty nodes around the last played node<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        ArrayList&lt;TicTacToeNode&gt; freeNodes = new ArrayList&lt;TicTacToeNode&gt;();<a name="line.192"></a>
+<span class="sourceLineNo">193</span>        for (int i = -1; i &lt; 2; i++) {<a name="line.193"></a>
+<span class="sourceLineNo">194</span>            for (int j = -1; j &lt; 2; j++) {<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                int tempX = playerLastX + j;<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                int tempY = playerLastY + i;<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                if(isBetween(tempX, 0, boardWidth -1)<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                        &amp;&amp; isBetween(tempY, 0, boardHeight -1)) {<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                    if(!board[tempY][tempX].isUsed()){<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                        freeNodes.add(board[tempY][tempX]);<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                    }<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                }<a name="line.202"></a>
+<span class="sourceLineNo">203</span>            }<a name="line.203"></a>
+<span class="sourceLineNo">204</span>        }<a name="line.204"></a>
+<span class="sourceLineNo">205</span>        // Plays on a random free node if any are found<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        if(freeNodes.size() &gt; 0){<a name="line.206"></a>
+<span class="sourceLineNo">207</span>            int i = (int)(Math.random() * freeNodes.size());<a name="line.207"></a>
+<span class="sourceLineNo">208</span>            x = freeNodes.get(i).getX(); <a name="line.208"></a>
+<span class="sourceLineNo">209</span>            y = freeNodes.get(i).getY(); <a name="line.209"></a>
+<span class="sourceLineNo">210</span>        } else {<a name="line.210"></a>
+<span class="sourceLineNo">211</span>            do {<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                y = (int)(Math.random() * boardHeight);<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                x = (int)(Math.random() * boardWidth);    <a name="line.213"></a>
+<span class="sourceLineNo">214</span>            } while (board[y][x].isUsed());        <a name="line.214"></a>
+<span class="sourceLineNo">215</span>        }<a name="line.215"></a>
+<span class="sourceLineNo">216</span>        board[y][x].playMark('O');<a name="line.216"></a>
+<span class="sourceLineNo">217</span>        lastUsedNode = board[y][x];<a name="line.217"></a>
+<span class="sourceLineNo">218</span>        System.out.println("Computer played on \"x:" + (x +1)<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                            + ", y:" + (y +1) + "\"");<a name="line.219"></a>
+<span class="sourceLineNo">220</span>    }<a name="line.220"></a>
+<span class="sourceLineNo">221</span>    /**<a name="line.221"></a>
+<span class="sourceLineNo">222</span>     * Reports the game result.<a name="line.222"></a>
+<span class="sourceLineNo">223</span>     */<a name="line.223"></a>
+<span class="sourceLineNo">224</span>    private static void endGame(){<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        String endText = "";<a name="line.225"></a>
+<span class="sourceLineNo">226</span>        if(turnsTaken == boardWidth * boardHeight){<a name="line.226"></a>
+<span class="sourceLineNo">227</span>            endText = "It's a draw.";<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        } else {<a name="line.228"></a>
+<span class="sourceLineNo">229</span>            endText = (playerTurn ? "You win " : "Computer wins " )<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                    + "from position \"x:" + (lastUsedNode.getX() + 1)<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                    + ", y:" + (lastUsedNode.getY() + 1) + "\"!";<a name="line.231"></a>
+<span class="sourceLineNo">232</span>        }<a name="line.232"></a>
+<span class="sourceLineNo">233</span>        System.out.println(endText);<a name="line.233"></a>
+<span class="sourceLineNo">234</span>    }<a name="line.234"></a>
+<span class="sourceLineNo">235</span>    /**<a name="line.235"></a>
+<span class="sourceLineNo">236</span>     * Returns parsed integer from user input string.<a name="line.236"></a>
+<span class="sourceLineNo">237</span>     * <a name="line.237"></a>
+<span class="sourceLineNo">238</span>     * @param input String from user.<a name="line.238"></a>
+<span class="sourceLineNo">239</span>     * @return -1 if user didn't give valid input.<a name="line.239"></a>
+<span class="sourceLineNo">240</span>     */<a name="line.240"></a>
+<span class="sourceLineNo">241</span>    private static int getUserInputInt(String input) {<a name="line.241"></a>
+<span class="sourceLineNo">242</span>        int output = -1;<a name="line.242"></a>
+<span class="sourceLineNo">243</span>        try {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>            output = Integer.parseInt(input);<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        } catch (NumberFormatException e) {<a name="line.245"></a>
+<span class="sourceLineNo">246</span>            System.out.println("Enter a valid number");<a name="line.246"></a>
+<span class="sourceLineNo">247</span>        }<a name="line.247"></a>
+<span class="sourceLineNo">248</span>        return output;<a name="line.248"></a>
+<span class="sourceLineNo">249</span>    }<a name="line.249"></a>
+<span class="sourceLineNo">250</span>    /**<a name="line.250"></a>
+<span class="sourceLineNo">251</span>     * Prints board coordinate numbers for X - axis.<a name="line.251"></a>
+<span class="sourceLineNo">252</span>     */<a name="line.252"></a>
+<span class="sourceLineNo">253</span>    private static void printXCoordinates(){<a name="line.253"></a>
+<span class="sourceLineNo">254</span>        String line = "   X";<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        for (int i = 1; i &lt;= boardWidth; i++) {<a name="line.255"></a>
+<span class="sourceLineNo">256</span>            line += String.format("% 3d", i) + " ";<a name="line.256"></a>
+<span class="sourceLineNo">257</span>        }<a name="line.257"></a>
+<span class="sourceLineNo">258</span>        System.out.println(line);<a name="line.258"></a>
+<span class="sourceLineNo">259</span>    }<a name="line.259"></a>
+<span class="sourceLineNo">260</span>    /**<a name="line.260"></a>
+<span class="sourceLineNo">261</span>     * Prints a line of ascii graphic for the board.<a name="line.261"></a>
+<span class="sourceLineNo">262</span>     * <a name="line.262"></a>
+<span class="sourceLineNo">263</span>     * @param printCoordinate determines if to print Y - axis identifier.<a name="line.263"></a>
+<span class="sourceLineNo">264</span>     */<a name="line.264"></a>
+<span class="sourceLineNo">265</span>    private static void printAsciiLine(boolean printCoordinate){<a name="line.265"></a>
+<span class="sourceLineNo">266</span>        String line = printCoordinate ? " Y " : "   ";<a name="line.266"></a>
+<span class="sourceLineNo">267</span>        for (int i = 0; i &lt; boardWidth; i++) {<a name="line.267"></a>
+<span class="sourceLineNo">268</span>            line += "+---";<a name="line.268"></a>
+<span class="sourceLineNo">269</span>        }<a name="line.269"></a>
+<span class="sourceLineNo">270</span>        System.out.println(line + "+");<a name="line.270"></a>
+<span class="sourceLineNo">271</span>    }<a name="line.271"></a>
+<span class="sourceLineNo">272</span>    /**<a name="line.272"></a>
+<span class="sourceLineNo">273</span>     * Prints marks from the board from given index.<a name="line.273"></a>
+<span class="sourceLineNo">274</span>     * <a name="line.274"></a>
+<span class="sourceLineNo">275</span>     * @param i the board index to print.<a name="line.275"></a>
+<span class="sourceLineNo">276</span>     */<a name="line.276"></a>
+<span class="sourceLineNo">277</span>    private static void printBoardMarks(int i){<a name="line.277"></a>
+<span class="sourceLineNo">278</span>        for (int j = 0; j &lt; board[i].length; j++) {<a name="line.278"></a>
+<span class="sourceLineNo">279</span>            if(j == 0){<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                System.out.print(String.format("% 3d", i + 1)<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                                + "| " + board[i][j].getMark());<a name="line.281"></a>
+<span class="sourceLineNo">282</span>            } else if (j == boardWidth - 1){<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                System.out.print(" | " + board[i][j].getMark() + " |");<a name="line.283"></a>
+<span class="sourceLineNo">284</span>            } else {<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                System.out.print(" | " + board[i][j].getMark());<a name="line.285"></a>
+<span class="sourceLineNo">286</span>            }<a name="line.286"></a>
+<span class="sourceLineNo">287</span>        }<a name="line.287"></a>
+<span class="sourceLineNo">288</span>        System.out.println();<a name="line.288"></a>
+<span class="sourceLineNo">289</span>    }<a name="line.289"></a>
+<span class="sourceLineNo">290</span>    /**<a name="line.290"></a>
+<span class="sourceLineNo">291</span>     * Prints the game board.<a name="line.291"></a>
+<span class="sourceLineNo">292</span>     */<a name="line.292"></a>
+<span class="sourceLineNo">293</span>    private static void printBoard(){<a name="line.293"></a>
+<span class="sourceLineNo">294</span>        printXCoordinates();<a name="line.294"></a>
+<span class="sourceLineNo">295</span>        for (int i = 0; i &lt; board.length; i++) {<a name="line.295"></a>
+<span class="sourceLineNo">296</span>            printAsciiLine(i == 0);<a name="line.296"></a>
+<span class="sourceLineNo">297</span>            printBoardMarks(i);<a name="line.297"></a>
+<span class="sourceLineNo">298</span>        }<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        printAsciiLine(false);<a name="line.299"></a>
+<span class="sourceLineNo">300</span>        System.out.println();<a name="line.300"></a>
+<span class="sourceLineNo">301</span>    }<a name="line.301"></a>
+<span class="sourceLineNo">302</span>    /**<a name="line.302"></a>
+<span class="sourceLineNo">303</span>     * Determines if the node forms a winning combination.<a name="line.303"></a>
+<span class="sourceLineNo">304</span>     * <a name="line.304"></a>
+<span class="sourceLineNo">305</span>     * @param node the node to check for victory.<a name="line.305"></a>
+<span class="sourceLineNo">306</span>     * @return true if node forms a combination of required length.<a name="line.306"></a>
+<span class="sourceLineNo">307</span>     */<a name="line.307"></a>
+<span class="sourceLineNo">308</span>    private static boolean wasWinningMove(TicTacToeNode node){<a name="line.308"></a>
+<span class="sourceLineNo">309</span>        char c = node.getMark();<a name="line.309"></a>
+<span class="sourceLineNo">310</span>        int inRowCount = 0;<a name="line.310"></a>
+<span class="sourceLineNo">311</span>        boolean victory = false;<a name="line.311"></a>
+<span class="sourceLineNo">312</span>        int xPos = node.getX();<a name="line.312"></a>
+<span class="sourceLineNo">313</span>        int yPos = node.getY();<a name="line.313"></a>
+<span class="sourceLineNo">314</span>        <a name="line.314"></a>
+<span class="sourceLineNo">315</span>        // Horizontal check<a name="line.315"></a>
+<span class="sourceLineNo">316</span>        for (int i = -(inRowToWin -1); i &lt;= (inRowToWin -1) &amp;&amp; !victory; i++) {<a name="line.316"></a>
+<span class="sourceLineNo">317</span>            if(isBetween(xPos + i, 0, boardWidth -1)) {<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                if(board[yPos][xPos + i].getMark() == c){<a name="line.318"></a>
+<span class="sourceLineNo">319</span>                    inRowCount++;<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                    if(inRowCount == inRowToWin){<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                        victory = true;<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                        break;<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                    }<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                } else {<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                    inRowCount = 0;<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                }    <a name="line.326"></a>
+<span class="sourceLineNo">327</span>            }<a name="line.327"></a>
+<span class="sourceLineNo">328</span>        }<a name="line.328"></a>
+<span class="sourceLineNo">329</span><a name="line.329"></a>
+<span class="sourceLineNo">330</span>        // Vertical check<a name="line.330"></a>
+<span class="sourceLineNo">331</span>        inRowCount = 0;<a name="line.331"></a>
+<span class="sourceLineNo">332</span>        for (int i = -(inRowToWin -1); i &lt;= (inRowToWin -1) &amp;&amp; !victory; i++) {<a name="line.332"></a>
+<span class="sourceLineNo">333</span>            if(isBetween(yPos + i, 0, boardHeight -1)) {<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                if(board[yPos + i][xPos].getMark() == c){<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                    inRowCount++;<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                    if(inRowCount == inRowToWin){<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                        victory = true;<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                        break;<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                    }<a name="line.339"></a>
+<span class="sourceLineNo">340</span>                } else {<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                    inRowCount = 0;<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                }    <a name="line.342"></a>
+<span class="sourceLineNo">343</span>            }<a name="line.343"></a>
+<span class="sourceLineNo">344</span>        }<a name="line.344"></a>
+<span class="sourceLineNo">345</span><a name="line.345"></a>
+<span class="sourceLineNo">346</span>        // Diagonals<a name="line.346"></a>
+<span class="sourceLineNo">347</span><a name="line.347"></a>
+<span class="sourceLineNo">348</span>        // North-west to south-east<a name="line.348"></a>
+<span class="sourceLineNo">349</span>        inRowCount = 0;<a name="line.349"></a>
+<span class="sourceLineNo">350</span>        for (int i = -(inRowToWin -1); i &lt;= (inRowToWin -1) &amp;&amp; !victory; i++) {<a name="line.350"></a>
+<span class="sourceLineNo">351</span>            if(isBetween(xPos + i, 0, boardWidth -1) <a name="line.351"></a>
+<span class="sourceLineNo">352</span>                    &amp;&amp; isBetween(yPos + i, 0, boardHeight -1)) {<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                if(board[yPos + i][xPos + i].getMark() == c){<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                    inRowCount++;<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                    if(inRowCount == inRowToWin){<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                        victory = true;<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                        break;<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                    }<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                } else {<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                    inRowCount = 0;<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                }<a name="line.361"></a>
+<span class="sourceLineNo">362</span>            }<a name="line.362"></a>
+<span class="sourceLineNo">363</span>        }<a name="line.363"></a>
+<span class="sourceLineNo">364</span><a name="line.364"></a>
+<span class="sourceLineNo">365</span>        // South-west to north-east<a name="line.365"></a>
+<span class="sourceLineNo">366</span>        inRowCount = 0;<a name="line.366"></a>
+<span class="sourceLineNo">367</span>        for (int i = -(inRowToWin -1); i &lt;= (inRowToWin -1) &amp;&amp; !victory; i++) {<a name="line.367"></a>
+<span class="sourceLineNo">368</span>            if(isBetween(xPos + i, 0, boardWidth -1) <a name="line.368"></a>
+<span class="sourceLineNo">369</span>                    &amp;&amp; isBetween(yPos - i, 0, boardHeight -1)) {<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                if(board[yPos - i][xPos + i].getMark() == c){<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                    inRowCount++;<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                    if(inRowCount == inRowToWin){<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                        victory = true;<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                        break;<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                    }<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                } else {<a name="line.376"></a>
+<span class="sourceLineNo">377</span>                    inRowCount = 0;<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                }<a name="line.378"></a>
+<span class="sourceLineNo">379</span>            }<a name="line.379"></a>
+<span class="sourceLineNo">380</span>        }<a name="line.380"></a>
+<span class="sourceLineNo">381</span>        return victory;<a name="line.381"></a>
+<span class="sourceLineNo">382</span>    }<a name="line.382"></a>
+<span class="sourceLineNo">383</span>    /**<a name="line.383"></a>
+<span class="sourceLineNo">384</span>     * Checks if x is between min and max.<a name="line.384"></a>
+<span class="sourceLineNo">385</span>     * <a name="line.385"></a>
+<span class="sourceLineNo">386</span>     * @param x value to test.<a name="line.386"></a>
+<span class="sourceLineNo">387</span>     * @param min the low value.<a name="line.387"></a>
+<span class="sourceLineNo">388</span>     * @param max the high value.<a name="line.388"></a>
+<span class="sourceLineNo">389</span>     * <a name="line.389"></a>
+<span class="sourceLineNo">390</span>     * @return true if value of x is between min and max<a name="line.390"></a>
+<span class="sourceLineNo">391</span>     */<a name="line.391"></a>
+<span class="sourceLineNo">392</span>    private static boolean isBetween(int x, int min, int max){<a name="line.392"></a>
+<span class="sourceLineNo">393</span>        return (x &gt;= min &amp;&amp; x &lt;= max);<a name="line.393"></a>
+<span class="sourceLineNo">394</span>    }<a name="line.394"></a>
+<span class="sourceLineNo">395</span>    /**<a name="line.395"></a>
+<span class="sourceLineNo">396</span>     * Asks user to confirm a decision.<a name="line.396"></a>
+<span class="sourceLineNo">397</span>     * <a name="line.397"></a>
+<span class="sourceLineNo">398</span>     * @return true if user input starts with 'y'<a name="line.398"></a>
+<span class="sourceLineNo">399</span>     */<a name="line.399"></a>
+<span class="sourceLineNo">400</span>    private static boolean getUserConfirmation(){<a name="line.400"></a>
+<span class="sourceLineNo">401</span>        String input = "";<a name="line.401"></a>
+<span class="sourceLineNo">402</span>        boolean success = false;<a name="line.402"></a>
+<span class="sourceLineNo">403</span>        char c = ' ';<a name="line.403"></a>
+<span class="sourceLineNo">404</span>        do {<a name="line.404"></a>
+<span class="sourceLineNo">405</span>            try {<a name="line.405"></a>
+<span class="sourceLineNo">406</span>                System.out.println("Are you sure you want to do that? (y/n)");<a name="line.406"></a>
+<span class="sourceLineNo">407</span>                input = sc.nextLine().toLowerCase();<a name="line.407"></a>
+<span class="sourceLineNo">408</span>                c = input.charAt(0);<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                if(c == 'y' || c == 'n'){<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                    success = true;<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                }<a name="line.411"></a>
+<span class="sourceLineNo">412</span>            } catch (Exception e) {<a name="line.412"></a>
+<span class="sourceLineNo">413</span><a name="line.413"></a>
+<span class="sourceLineNo">414</span>            }<a name="line.414"></a>
+<span class="sourceLineNo">415</span>        } while (!success);<a name="line.415"></a>
+<span class="sourceLineNo">416</span>        return c == 'y';<a name="line.416"></a>
+<span class="sourceLineNo">417</span>    }<a name="line.417"></a>
+<span class="sourceLineNo">418</span>}<a name="line.418"></a>
+<span class="sourceLineNo">419</span><a name="line.419"></a>
+<span class="sourceLineNo">420</span>/**<a name="line.420"></a>
+<span class="sourceLineNo">421</span> * TicTacToeNode stores useful data for TicTacToe game-logic.<a name="line.421"></a>
+<span class="sourceLineNo">422</span> * <a name="line.422"></a>
+<span class="sourceLineNo">423</span> * @author Arttu Knuutinen<a name="line.423"></a>
+<span class="sourceLineNo">424</span> * @version 2018.1214<a name="line.424"></a>
+<span class="sourceLineNo">425</span> */<a name="line.425"></a>
+<span class="sourceLineNo">426</span>class TicTacToeNode {<a name="line.426"></a>
+<span class="sourceLineNo">427</span>    /**<a name="line.427"></a>
+<span class="sourceLineNo">428</span>     * Boolean used to see if a mark has already been placed on the node.<a name="line.428"></a>
+<span class="sourceLineNo">429</span>     */<a name="line.429"></a>
+<span class="sourceLineNo">430</span>    private boolean isUsed = false;<a name="line.430"></a>
+<span class="sourceLineNo">431</span>    /**<a name="line.431"></a>
+<span class="sourceLineNo">432</span>     * Stores the mark that's placed on the node.<a name="line.432"></a>
+<span class="sourceLineNo">433</span>     */<a name="line.433"></a>
+<span class="sourceLineNo">434</span>    private char mark = ' ';<a name="line.434"></a>
+<span class="sourceLineNo">435</span>    /**<a name="line.435"></a>
+<span class="sourceLineNo">436</span>     * The node's X - index on the board.<a name="line.436"></a>
+<span class="sourceLineNo">437</span>     */<a name="line.437"></a>
+<span class="sourceLineNo">438</span>    private int xPos;<a name="line.438"></a>
+<span class="sourceLineNo">439</span>    /**<a name="line.439"></a>
+<span class="sourceLineNo">440</span>     * The node's Y - index on the board.<a name="line.440"></a>
+<span class="sourceLineNo">441</span>     */<a name="line.441"></a>
+<span class="sourceLineNo">442</span>    private int yPos;<a name="line.442"></a>
+<span class="sourceLineNo">443</span><a name="line.443"></a>
+<span class="sourceLineNo">444</span>    /**<a name="line.444"></a>
+<span class="sourceLineNo">445</span>     * Get method for the X - index.<a name="line.445"></a>
+<span class="sourceLineNo">446</span>     * <a name="line.446"></a>
+<span class="sourceLineNo">447</span>     * @return xPos<a name="line.447"></a>
+<span class="sourceLineNo">448</span>     */<a name="line.448"></a>
+<span class="sourceLineNo">449</span>    public int getX(){<a name="line.449"></a>
+<span class="sourceLineNo">450</span>        return xPos;<a name="line.450"></a>
+<span class="sourceLineNo">451</span>    }<a name="line.451"></a>
+<span class="sourceLineNo">452</span>    /**<a name="line.452"></a>
+<span class="sourceLineNo">453</span>     * Get method for the Y - index.<a name="line.453"></a>
+<span class="sourceLineNo">454</span>     * <a name="line.454"></a>
+<span class="sourceLineNo">455</span>     * @return yPos<a name="line.455"></a>
+<span class="sourceLineNo">456</span>     */<a name="line.456"></a>
+<span class="sourceLineNo">457</span>    public int getY(){<a name="line.457"></a>
+<span class="sourceLineNo">458</span>        return yPos;<a name="line.458"></a>
+<span class="sourceLineNo">459</span>    }<a name="line.459"></a>
+<span class="sourceLineNo">460</span>    /**<a name="line.460"></a>
+<span class="sourceLineNo">461</span>     * Get method for the stored mark.<a name="line.461"></a>
+<span class="sourceLineNo">462</span>     * <a name="line.462"></a>
+<span class="sourceLineNo">463</span>     * @return the "mark" char.<a name="line.463"></a>
+<span class="sourceLineNo">464</span>     */<a name="line.464"></a>
+<span class="sourceLineNo">465</span>    public char getMark(){<a name="line.465"></a>
+<span class="sourceLineNo">466</span>        return mark;<a name="line.466"></a>
+<span class="sourceLineNo">467</span>    }<a name="line.467"></a>
+<span class="sourceLineNo">468</span>    /**<a name="line.468"></a>
+<span class="sourceLineNo">469</span>     * Retuns the value of isUsed boolean.<a name="line.469"></a>
+<span class="sourceLineNo">470</span>     * <a name="line.470"></a>
+<span class="sourceLineNo">471</span>     * @return true if a mark has been played on the node.<a name="line.471"></a>
+<span class="sourceLineNo">472</span>     */<a name="line.472"></a>
+<span class="sourceLineNo">473</span>    public boolean isUsed(){<a name="line.473"></a>
+<span class="sourceLineNo">474</span>        return isUsed;<a name="line.474"></a>
+<span class="sourceLineNo">475</span>    }<a name="line.475"></a>
+<span class="sourceLineNo">476</span>    /**<a name="line.476"></a>
+<span class="sourceLineNo">477</span>     * Sets the mark variable to be the given parameter.<a name="line.477"></a>
+<span class="sourceLineNo">478</span>     * <a name="line.478"></a>
+<span class="sourceLineNo">479</span>     * @param mark char to set on the node.<a name="line.479"></a>
+<span class="sourceLineNo">480</span>     */<a name="line.480"></a>
+<span class="sourceLineNo">481</span>    private void setMark(char mark){<a name="line.481"></a>
+<span class="sourceLineNo">482</span>        this.mark = mark;<a name="line.482"></a>
+<span class="sourceLineNo">483</span>    }<a name="line.483"></a>
+<span class="sourceLineNo">484</span>    /**<a name="line.484"></a>
+<span class="sourceLineNo">485</span>     * Used to play a mark on the node, sets isUsed to true.<a name="line.485"></a>
+<span class="sourceLineNo">486</span>     * <a name="line.486"></a>
+<span class="sourceLineNo">487</span>     * @param mark the char to play on the node.<a name="line.487"></a>
+<span class="sourceLineNo">488</span>     */<a name="line.488"></a>
+<span class="sourceLineNo">489</span>    public void playMark(char mark){<a name="line.489"></a>
+<span class="sourceLineNo">490</span>        setMark(mark);<a name="line.490"></a>
+<span class="sourceLineNo">491</span>        isUsed = true;<a name="line.491"></a>
+<span class="sourceLineNo">492</span>    }<a name="line.492"></a>
+<span class="sourceLineNo">493</span>    /**<a name="line.493"></a>
+<span class="sourceLineNo">494</span>     * Constructor<a name="line.494"></a>
+<span class="sourceLineNo">495</span>     * <a name="line.495"></a>
+<span class="sourceLineNo">496</span>     * @param xPos the X - index of the node in 2D-array<a name="line.496"></a>
+<span class="sourceLineNo">497</span>     * @param yPos the Y - index of the node in 2D-array<a name="line.497"></a>
+<span class="sourceLineNo">498</span>     */<a name="line.498"></a>
+<span class="sourceLineNo">499</span>    public TicTacToeNode(int xPos, int yPos){<a name="line.499"></a>
+<span class="sourceLineNo">500</span>        this.xPos = xPos;<a name="line.500"></a>
+<span class="sourceLineNo">501</span>        this.yPos = yPos;<a name="line.501"></a>
+<span class="sourceLineNo">502</span>    }<a name="line.502"></a>
+<span class="sourceLineNo">503</span>}<a name="line.503"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>
