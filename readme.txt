@@ -1,7 +1,3 @@
-AUTHOR
-    Arttu Knuutinen
-TO COMPILE AND RUN
-    javac src/TicTacToe.java
-    java src/TicTacToe
-SCREENCAST OF THE PROJECT WORK
-    https://youtu.be/v2voLWO2kTU
+Tic-tac-toe that runs in command prompt.
+
+Made for a school project in 2018.
